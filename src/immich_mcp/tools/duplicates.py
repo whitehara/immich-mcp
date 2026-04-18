@@ -1,4 +1,5 @@
 import asyncio
+import logging
 import time
 from typing import Annotated
 
@@ -8,6 +9,8 @@ from pydantic import Field
 
 from ..client import get_client
 from ..utils import asset_web_url
+
+_log = logging.getLogger(__name__)
 
 # Ordered from highest to lowest quality; first matching fragment wins.
 # Fragments are matched as substrings of the lowercased MIME type.
@@ -21,7 +24,7 @@ _FORMAT_PRIORITY: tuple[tuple[int, tuple[str, ...]], ...] = (
 )
 
 # Background-fetch cache for /api/duplicates.
-# /api/duplicates on large libraries (70k+ assets) takes 1–2 minutes, which
+# /api/duplicates on large libraries (70k+ assets) takes several minutes, which
 # exceeds the ~30-second Cloudflare AI gateway timeout.  We fetch once in the
 # background so subsequent tool calls return instantly from memory.
 _cache: list | None = None
@@ -32,9 +35,12 @@ _CACHE_TTL: float = 3600.0  # seconds before a background refresh is triggered
 
 async def _fetch_into_cache() -> None:
     global _cache, _cache_fetch_time
-    client = get_client()
-    _cache = await client.get("/api/duplicates")
-    _cache_fetch_time = time.monotonic()
+    try:
+        client = get_client()
+        _cache = await client.get("/api/duplicates")
+        _cache_fetch_time = time.monotonic()
+    except Exception as exc:
+        _log.error("Duplicate cache fetch failed: %s", exc)
 
 
 def _format_score(mime_type: str | None) -> int:
@@ -101,19 +107,22 @@ def register(mcp: FastMCP) -> None:
     @mcp.tool(
         name="immich.duplicates.list",
         description=(
-            "List all duplicate asset groups detected by Immich. "
+            "List duplicate asset groups detected by Immich, with pagination. "
             "Each group contains assets with matching content hashes. "
             "Returns full metadata needed for deletion decisions: "
             "file format, size, resolution, favorite status, album membership, Live Photo status. "
             "Results are served from an in-memory cache (refreshed every hour). "
             "On first call after server start the cache is empty: the response will have "
             "cache_ready=false and status='prefetching' while data loads in the background — "
-            "call again in 1–2 minutes."
+            "call again in a few minutes. "
+            "Use page/page_size to paginate through all groups; check total_pages in the response."
         ),
         annotations=ToolAnnotations(title="List Duplicates", readOnlyHint=True, idempotentHint=True),
     )
     async def duplicates_list(
         analyze: Annotated[bool, Field(description="Include keep/delete recommendations for each group")] = True,
+        page: Annotated[int, Field(ge=1, description="Page number (1-based)")] = 1,
+        page_size: Annotated[int, Field(ge=1, le=500, description="Number of duplicate groups per page")] = 50,
     ) -> dict:
         global _prefetch_task
 
@@ -126,7 +135,7 @@ def register(mcp: FastMCP) -> None:
                 "status": "prefetching",
                 "message": (
                     "Duplicate data is being fetched from Immich in the background "
-                    "(large libraries take 1–2 minutes). Call this tool again shortly."
+                    "(large libraries take several minutes). Call this tool again shortly."
                 ),
             }
 
@@ -136,8 +145,15 @@ def register(mcp: FastMCP) -> None:
                 _prefetch_task = asyncio.create_task(_fetch_into_cache())
 
         raw = _cache
+        total_groups = len(raw)
+        total_duplicates = sum(len(e.get("assets", [])) for e in raw)
+        total_pages = max(1, (total_groups + page_size - 1) // page_size)
+
+        start = (page - 1) * page_size
+        end = start + page_size
+
         groups = []
-        for entry in raw:
+        for entry in raw[start:end]:
             entry_assets = entry.get("assets", [])
             for asset in entry_assets:
                 if "id" in asset:
@@ -152,8 +168,11 @@ def register(mcp: FastMCP) -> None:
 
         return {
             "cache_ready": True,
-            "total_groups": len(groups),
-            "total_duplicates": sum(len(g["assets"]) for g in groups),
+            "total_groups": total_groups,
+            "total_duplicates": total_duplicates,
+            "page": page,
+            "page_size": page_size,
+            "total_pages": total_pages,
             "groups": groups,
         }
 

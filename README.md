@@ -216,9 +216,20 @@ Each tool also carries a human-readable `title` annotation used by MCP clients f
 
 | Tool | Description | R | D | I |
 |------|-------------|:-:|:-:|:-:|
-| `immich.duplicates.list` | List duplicate groups with analysis (format score, resolution, protection status). Results are served from an in-memory cache; first call after server start returns `cache_ready=false` while data loads in the background — retry in 1–2 minutes. | ✓ | | ✓ |
+| `immich.duplicates.list` | List duplicate groups with analysis (format score, resolution, protection status). Paginated (`page`/`page_size`, default 50 groups/page). Results are served from an in-memory cache; first call after server start returns `cache_ready=false` while data loads in the background — retry in a few minutes. | ✓ | | ✓ |
 | `immich.duplicates.delete` | Delete assets from duplicate groups (dry_run supported) | | ✓ | ✓ |
 | `immich.duplicates.dismiss` | Dismiss duplicate groups without deleting files (dry_run supported) | | ✓ | ✓ |
+
+#### Pagination
+
+`immich.duplicates.list` returns paginated results to avoid oversized responses on large libraries:
+
+| Parameter | Default | Description |
+|-----------|---------|-------------|
+| `page` | `1` | Page number (1-based) |
+| `page_size` | `50` | Groups per page (max 500) |
+
+The response includes `total_groups`, `total_pages`, `page`, and `page_size` fields. Iterate `page=1..total_pages` to process all groups.
 
 #### Duplicate Analysis Fields
 

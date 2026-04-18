@@ -245,6 +245,9 @@ async def test_list_returns_data_from_cache(registered):
     assert result["cache_ready"] is True
     assert result["total_groups"] == 1
     assert result["total_duplicates"] == 2
+    assert result["page"] == 1
+    assert result["page_size"] == 50
+    assert result["total_pages"] == 1
 
 
 @pytest.mark.asyncio
@@ -294,6 +297,38 @@ def test_list_is_readonly(registered):
     ann = get_annotations(mcp, "immich.duplicates.list")
     assert ann.readOnlyHint is True
     assert ann.idempotentHint is True
+
+
+@pytest.mark.asyncio
+async def test_list_pagination(registered):
+    mcp, _ = registered
+    dup_mod._cache = [
+        {"duplicateId": f"dup-{i}", "assets": [make_asset(f"a{i}")]}
+        for i in range(7)
+    ]
+
+    result = await get_fn(mcp, "immich.duplicates.list")(page=2, page_size=3, analyze=False)
+
+    assert result["total_groups"] == 7
+    assert result["total_pages"] == 3
+    assert result["page"] == 2
+    assert result["page_size"] == 3
+    assert len(result["groups"]) == 3
+    assert result["groups"][0]["duplicate_id"] == "dup-3"
+
+
+@pytest.mark.asyncio
+async def test_list_pagination_last_page(registered):
+    mcp, _ = registered
+    dup_mod._cache = [
+        {"duplicateId": f"dup-{i}", "assets": [make_asset(f"a{i}")]}
+        for i in range(7)
+    ]
+
+    result = await get_fn(mcp, "immich.duplicates.list")(page=3, page_size=3, analyze=False)
+
+    assert len(result["groups"]) == 1
+    assert result["groups"][0]["duplicate_id"] == "dup-6"
 
 
 # ---------------------------------------------------------------------------
