@@ -34,7 +34,7 @@ Set environment variables before running:
 | `IMMICH_BASE_URL` | Yes | — | Immich server URL (e.g. `https://photos.example.com`) |
 | `IMMICH_API_KEY` | Yes | — | API key from Immich → Account Settings → API Keys |
 | `IMMICH_EXTERNAL_URL` | No | same as `IMMICH_BASE_URL` | Public URL used for `web_url` links (useful when base URL is internal) |
-| `IMMICH_TIMEOUT` | No | `30.0` | HTTP timeout in seconds |
+| `IMMICH_TIMEOUT` | No | `30.0` | HTTP timeout in seconds. The `/api/duplicates` endpoint on large libraries (70k+ assets) can exceed 30 s — set to `120.0` or higher if `immich.duplicates.list` times out. |
 | `IMMICH_MAX_RETRIES` | No | `3` | Retry attempts on transient errors |
 
 ### Immich API Key Permissions
@@ -216,7 +216,7 @@ Each tool also carries a human-readable `title` annotation used by MCP clients f
 
 | Tool | Description | R | D | I |
 |------|-------------|:-:|:-:|:-:|
-| `immich.duplicates.list` | List duplicate groups with analysis (format score, resolution, protection status) | ✓ | | ✓ |
+| `immich.duplicates.list` | List duplicate groups with analysis (format score, resolution, protection status). Results are served from an in-memory cache; first call after server start returns `cache_ready=false` while data loads in the background — retry in 1–2 minutes. | ✓ | | ✓ |
 | `immich.duplicates.delete` | Delete assets from duplicate groups (dry_run supported) | | ✓ | ✓ |
 | `immich.duplicates.dismiss` | Dismiss duplicate groups without deleting files (dry_run supported) | | ✓ | ✓ |
 

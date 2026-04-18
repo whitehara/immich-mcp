@@ -1,4 +1,7 @@
+import asyncio
+
 import pytest
+import immich_mcp.tools.duplicates as dup_mod
 from immich_mcp.tools import duplicates
 from immich_mcp.tools.duplicates import _analyze_group
 from .conftest import get_annotations, get_fn
@@ -8,6 +11,18 @@ from .conftest import get_annotations, get_fn
 def registered(mcp, patch_client):
     duplicates.register(mcp)
     return mcp, patch_client
+
+
+@pytest.fixture(autouse=True)
+def reset_cache():
+    """Isolate cache state between tests."""
+    dup_mod._cache = None
+    dup_mod._cache_fetch_time = 0.0
+    dup_mod._prefetch_task = None
+    yield
+    dup_mod._cache = None
+    dup_mod._cache_fetch_time = 0.0
+    dup_mod._prefetch_task = None
 
 
 # ---------------------------------------------------------------------------
@@ -182,23 +197,40 @@ def test_three_asset_group():
 
 
 # ---------------------------------------------------------------------------
-# immich.duplicates.list
+# immich.duplicates.list — prefetch / cache behaviour
 # ---------------------------------------------------------------------------
 
 @pytest.mark.asyncio
-async def test_list_calls_api_endpoint(registered):
+async def test_list_returns_prefetching_when_cache_empty(registered):
     mcp, client = registered
     client.get.return_value = []
 
-    await get_fn(mcp, "immich.duplicates.list")()
+    result = await get_fn(mcp, "immich.duplicates.list")()
 
-    client.get.assert_called_once_with("/api/duplicates")
+    assert result["cache_ready"] is False
+    assert result["status"] == "prefetching"
+    # Background task is created but client.get hasn't been awaited yet
+    client.get.assert_not_called()
 
 
 @pytest.mark.asyncio
-async def test_list_returns_summary_counts(registered):
+async def test_list_populates_cache_in_background(registered):
     mcp, client = registered
-    client.get.return_value = [
+    client.get.return_value = []
+
+    # First call: prefetch starts
+    await get_fn(mcp, "immich.duplicates.list")()
+    # Yield control so the background task runs
+    await asyncio.sleep(0)
+
+    client.get.assert_called_once_with("/api/duplicates")
+    assert dup_mod._cache == []
+
+
+@pytest.mark.asyncio
+async def test_list_returns_data_from_cache(registered):
+    mcp, _ = registered
+    dup_mod._cache = [
         {
             "duplicateId": "dup-1",
             "assets": [
@@ -210,14 +242,25 @@ async def test_list_returns_summary_counts(registered):
 
     result = await get_fn(mcp, "immich.duplicates.list")()
 
+    assert result["cache_ready"] is True
     assert result["total_groups"] == 1
     assert result["total_duplicates"] == 2
 
 
 @pytest.mark.asyncio
-async def test_list_includes_analysis_by_default(registered):
+async def test_list_does_not_call_api_on_cache_hit(registered):
     mcp, client = registered
-    client.get.return_value = [
+    dup_mod._cache = []
+
+    await get_fn(mcp, "immich.duplicates.list")()
+
+    client.get.assert_not_called()
+
+
+@pytest.mark.asyncio
+async def test_list_includes_analysis_by_default(registered):
+    mcp, _ = registered
+    dup_mod._cache = [
         {
             "duplicateId": "dup-1",
             "assets": [
@@ -236,8 +279,8 @@ async def test_list_includes_analysis_by_default(registered):
 
 @pytest.mark.asyncio
 async def test_list_skips_analysis_when_disabled(registered):
-    mcp, client = registered
-    client.get.return_value = [
+    mcp, _ = registered
+    dup_mod._cache = [
         {"duplicateId": "dup-1", "assets": [make_asset("a1"), make_asset("a2")]}
     ]
 

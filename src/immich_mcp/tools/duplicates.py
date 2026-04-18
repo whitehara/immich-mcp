@@ -1,3 +1,5 @@
+import asyncio
+import time
 from typing import Annotated
 
 from mcp.server.fastmcp import FastMCP
@@ -17,6 +19,22 @@ _FORMAT_PRIORITY: tuple[tuple[int, tuple[str, ...]], ...] = (
     (40,  ("webp",)),
     (30,  ("gif",)),
 )
+
+# Background-fetch cache for /api/duplicates.
+# /api/duplicates on large libraries (70k+ assets) takes 1–2 minutes, which
+# exceeds the ~30-second Cloudflare AI gateway timeout.  We fetch once in the
+# background so subsequent tool calls return instantly from memory.
+_cache: list | None = None
+_cache_fetch_time: float = 0.0
+_prefetch_task: "asyncio.Task[None] | None" = None
+_CACHE_TTL: float = 3600.0  # seconds before a background refresh is triggered
+
+
+async def _fetch_into_cache() -> None:
+    global _cache, _cache_fetch_time
+    client = get_client()
+    _cache = await client.get("/api/duplicates")
+    _cache_fetch_time = time.monotonic()
 
 
 def _format_score(mime_type: str | None) -> int:
@@ -86,16 +104,38 @@ def register(mcp: FastMCP) -> None:
             "List all duplicate asset groups detected by Immich. "
             "Each group contains assets with matching content hashes. "
             "Returns full metadata needed for deletion decisions: "
-            "file format, size, resolution, favorite status, album membership, Live Photo status."
+            "file format, size, resolution, favorite status, album membership, Live Photo status. "
+            "Results are served from an in-memory cache (refreshed every hour). "
+            "On first call after server start the cache is empty: the response will have "
+            "cache_ready=false and status='prefetching' while data loads in the background — "
+            "call again in 1–2 minutes."
         ),
         annotations=ToolAnnotations(title="List Duplicates", readOnlyHint=True, idempotentHint=True),
     )
     async def duplicates_list(
         analyze: Annotated[bool, Field(description="Include keep/delete recommendations for each group")] = True,
     ) -> dict:
-        client = get_client()
-        raw: list = await client.get("/api/duplicates")
+        global _prefetch_task
 
+        if _cache is None:
+            # No data yet — kick off background fetch and return immediately.
+            if _prefetch_task is None or _prefetch_task.done():
+                _prefetch_task = asyncio.create_task(_fetch_into_cache())
+            return {
+                "cache_ready": False,
+                "status": "prefetching",
+                "message": (
+                    "Duplicate data is being fetched from Immich in the background "
+                    "(large libraries take 1–2 minutes). Call this tool again shortly."
+                ),
+            }
+
+        # Cache is stale — refresh silently in the background while serving current data.
+        if (time.monotonic() - _cache_fetch_time) >= _CACHE_TTL:
+            if _prefetch_task is None or _prefetch_task.done():
+                _prefetch_task = asyncio.create_task(_fetch_into_cache())
+
+        raw = _cache
         groups = []
         for entry in raw:
             entry_assets = entry.get("assets", [])
@@ -111,6 +151,7 @@ def register(mcp: FastMCP) -> None:
             groups.append(group)
 
         return {
+            "cache_ready": True,
             "total_groups": len(groups),
             "total_duplicates": sum(len(g["assets"]) for g in groups),
             "groups": groups,
