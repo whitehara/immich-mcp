@@ -12,6 +12,10 @@ Review and safely clean up duplicate photos in the Immich library.
 1. Call `immich.duplicates.list` with `analyze=true` to get all duplicate groups
    with pre-computed keep/delete recommendations.
 
+   **Important**: On first call after server start, the response will have
+   `cache_ready=false` and `status="prefetching"` while data loads in the background
+   (large libraries take 1–2 minutes). Wait and call again until `cache_ready=true`.
+
 2. For each duplicate group, evaluate the analysis:
    - `keep_id`: the asset recommended to keep (highest quality/priority)
    - `safe_to_delete_ids`: assets safe to delete (not favorited, not in any album)
