@@ -134,8 +134,9 @@ def register(mcp: FastMCP) -> None:
                 "cache_ready": False,
                 "status": "prefetching",
                 "message": (
-                    "Duplicate data is being fetched from Immich in the background "
-                    "(large libraries take several minutes). Call this tool again shortly."
+                    "Duplicate data is being fetched from Immich in the background. "
+                    "Large libraries (70k+ assets) may take 20-30 minutes on first load. "
+                    "Call this tool again later to check if the cache is ready."
                 ),
             }
 

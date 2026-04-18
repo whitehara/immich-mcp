@@ -13,8 +13,9 @@ Review and safely clean up duplicate photos in the Immich library.
    with pre-computed keep/delete recommendations.
 
    **Important**: On first call after server start, the response will have
-   `cache_ready=false` and `status="prefetching"` while data loads in the background
-   (large libraries take several minutes). Wait and call again until `cache_ready=true`.
+   `cache_ready=false` and `status="prefetching"` while data loads in the background.
+   Large libraries (70k+ assets) may take 20–30 minutes on first load.
+   Wait and call again until `cache_ready=true`.
 
    Results are **paginated** (default 50 groups/page). Check `total_pages` in the
    response and call again with `page=2`, `page=3`, etc. to retrieve all groups.

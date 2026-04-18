@@ -216,7 +216,7 @@ Each tool also carries a human-readable `title` annotation used by MCP clients f
 
 | Tool | Description | R | D | I |
 |------|-------------|:-:|:-:|:-:|
-| `immich.duplicates.list` | List duplicate groups with analysis (format score, resolution, protection status). Paginated (`page`/`page_size`, default 50 groups/page). Results are served from an in-memory cache; first call after server start returns `cache_ready=false` while data loads in the background — retry in a few minutes. | ✓ | | ✓ |
+| `immich.duplicates.list` | List duplicate groups with analysis (format score, resolution, protection status). Paginated (`page`/`page_size`, default 50 groups/page). Results are served from an in-memory cache; first call after server start returns `cache_ready=false` while data loads — large libraries may take 20–30 minutes on first load. | ✓ | | ✓ |
 | `immich.duplicates.delete` | Delete assets from duplicate groups (dry_run supported) | | ✓ | ✓ |
 | `immich.duplicates.dismiss` | Dismiss duplicate groups without deleting files (dry_run supported) | | ✓ | ✓ |
 
