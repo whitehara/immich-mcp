@@ -105,7 +105,7 @@ def _analyze_group(assets: list[dict]) -> dict:
 
 def register(mcp: FastMCP) -> None:
     @mcp.tool(
-        name="immich.duplicates.list",
+        name="immich_duplicates_list",
         description=(
             "List duplicate asset groups detected by Immich, with pagination. "
             "Each group contains assets with matching content hashes. "
@@ -178,7 +178,7 @@ def register(mcp: FastMCP) -> None:
         }
 
     @mcp.tool(
-        name="immich.duplicates.delete",
+        name="immich_duplicates_delete",
         description=(
             "Delete specific assets from duplicate groups. "
             "Always run with dry_run=true first to confirm what will be deleted. "
@@ -210,7 +210,7 @@ def register(mcp: FastMCP) -> None:
         }
 
     @mcp.tool(
-        name="immich.duplicates.dismiss",
+        name="immich_duplicates_dismiss",
         description=(
             "Dismiss duplicate groups without deleting any assets. "
             "Use this when the assets are intentionally kept as separate copies "

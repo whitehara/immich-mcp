@@ -6,7 +6,7 @@ from ..client import get_client
 
 def register(mcp: FastMCP) -> None:
     @mcp.tool(
-        name="immich.ping",
+        name="immich_ping",
         description="Verify connectivity and authentication with the Immich server. Returns server version and status.",
         annotations=ToolAnnotations(title="immich Ping Server", readOnlyHint=True, idempotentHint=True),
     )
@@ -15,7 +15,7 @@ def register(mcp: FastMCP) -> None:
         return await client.get("/api/server/about")
 
     @mcp.tool(
-        name="immich.capabilities",
+        name="immich_capabilities",
         description="Discover Immich server features and supported API capabilities.",
         annotations=ToolAnnotations(title="immich Server Capabilities", readOnlyHint=True, idempotentHint=True),
     )

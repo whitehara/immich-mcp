@@ -34,7 +34,7 @@ Set environment variables before running:
 | `IMMICH_BASE_URL` | Yes | — | Immich server URL (e.g. `https://photos.example.com`) |
 | `IMMICH_API_KEY` | Yes | — | API key from Immich → Account Settings → API Keys |
 | `IMMICH_EXTERNAL_URL` | No | same as `IMMICH_BASE_URL` | Public URL used for `web_url` links (useful when base URL is internal) |
-| `IMMICH_TIMEOUT` | No | `30.0` | HTTP timeout in seconds. The `/api/duplicates` endpoint on large libraries (70k+ assets) can exceed 30 s — set to `120.0` or higher if `immich.duplicates.list` times out. |
+| `IMMICH_TIMEOUT` | No | `30.0` | HTTP timeout in seconds. The `/api/duplicates` endpoint on large libraries (70k+ assets) can exceed 30 s — set to `120.0` or higher if `immich_duplicates_list` times out. |
 | `IMMICH_MAX_RETRIES` | No | `3` | Retry attempts on transient errors |
 
 ### Immich API Key Permissions
@@ -45,37 +45,37 @@ For **full functionality** (all tools enabled):
 
 | Scope | Required by |
 |-------|-------------|
-| `server.about` | `immich.ping` |
-| `user.read` | `immich.user.me` |
-| `asset.read` | `immich.assets.list/get/view`, all search tools |
-| `asset.upload` | `immich.assets.upload` |
-| `asset.update` | `immich.assets.update`, `immich.assets.bulk_update` |
-| `asset.delete` | `immich.assets.delete`, `immich.duplicates.delete` |
-| `asset.statistics` | `immich.assets.statistics` |
-| `album.read` | `immich.albums.list/get` |
-| `album.create` | `immich.albums.create` |
-| `album.update` | `immich.albums.update` |
-| `album.delete` | `immich.albums.delete` |
-| `albumAsset.create` | `immich.albums.add_assets` |
-| `albumAsset.delete` | `immich.albums.remove_assets` |
-| `person.read` | `immich.people.list/get` |
-| `person.update` | `immich.people.update` |
-| `person.merge` | `immich.people.merge` |
-| `person.statistics` | `immich.people.statistics` |
-| `tag.read` | `immich.tags.list/get` |
-| `tag.create` | `immich.tags.create` |
-| `tag.update` | `immich.tags.update` |
-| `tag.delete` | `immich.tags.delete` |
-| `sharedLink.read` | `immich.shared_links.list/get` |
-| `sharedLink.create` | `immich.shared_links.create` |
-| `sharedLink.update` | `immich.shared_links.update` |
-| `sharedLink.delete` | `immich.shared_links.remove` |
-| `activity.read` | `immich.activities.list` |
-| `activity.statistics` | `immich.activities.statistics` |
-| `activity.create` | `immich.activities.create` |
-| `activity.delete` | `immich.activities.delete` |
-| `duplicate.read` | `immich.duplicates.list` |
-| `duplicate.delete` | `immich.duplicates.dismiss` |
+| `server.about` | `immich_ping` |
+| `user.read` | `immich_user_me` |
+| `asset.read` | `immich_assets_list/get/view`, all search tools |
+| `asset.upload` | `immich_assets_upload` |
+| `asset.update` | `immich_assets_update`, `immich_assets_bulk_update` |
+| `asset.delete` | `immich_assets_delete`, `immich_duplicates_delete` |
+| `asset.statistics` | `immich_assets_statistics` |
+| `album.read` | `immich_albums_list/get` |
+| `album.create` | `immich_albums_create` |
+| `album.update` | `immich_albums_update` |
+| `album.delete` | `immich_albums_delete` |
+| `albumAsset.create` | `immich_albums_add_assets` |
+| `albumAsset.delete` | `immich_albums_remove_assets` |
+| `person.read` | `immich_people_list/get` |
+| `person.update` | `immich_people_update` |
+| `person.merge` | `immich_people_merge` |
+| `person.statistics` | `immich_people_statistics` |
+| `tag.read` | `immich_tags_list/get` |
+| `tag.create` | `immich_tags_create` |
+| `tag.update` | `immich_tags_update` |
+| `tag.delete` | `immich_tags_delete` |
+| `sharedLink.read` | `immich_shared_links_list/get` |
+| `sharedLink.create` | `immich_shared_links_create` |
+| `sharedLink.update` | `immich_shared_links_update` |
+| `sharedLink.delete` | `immich_shared_links_remove` |
+| `activity.read` | `immich_activities_list` |
+| `activity.statistics` | `immich_activities_statistics` |
+| `activity.create` | `immich_activities_create` |
+| `activity.delete` | `immich_activities_delete` |
+| `duplicate.read` | `immich_duplicates_list` |
+| `duplicate.delete` | `immich_duplicates_dismiss` |
 
 For **read-only use** (no create/update/delete tools), grant only:
 `server.about`, `user.read`, `asset.read`, `asset.statistics`, `album.read`, `person.read`, `person.statistics`, `tag.read`, `sharedLink.read`, `activity.read`, `activity.statistics`, `duplicate.read`
@@ -131,98 +131,98 @@ Each tool also carries a human-readable `title` annotation used by MCP clients f
 
 | Tool | Description | R | D | I |
 |------|-------------|:-:|:-:|:-:|
-| `immich.ping` | Verify connectivity, returns server version | ✓ | | ✓ |
-| `immich.capabilities` | List supported server features | ✓ | | ✓ |
+| `immich_ping` | Verify connectivity, returns server version | ✓ | | ✓ |
+| `immich_capabilities` | List supported server features | ✓ | | ✓ |
 
 ### User
 
 | Tool | Description | R | D | I |
 |------|-------------|:-:|:-:|:-:|
-| `immich.user.me` | Get the authenticated user's profile (name, email, quota, role) | ✓ | | ✓ |
+| `immich_user_me` | Get the authenticated user's profile (name, email, quota, role) | ✓ | | ✓ |
 
 ### Assets
 
 | Tool | Description | R | D | I |
 |------|-------------|:-:|:-:|:-:|
-| `immich.assets.list` | List assets with filters (favorite, archived, trashed, type) | ✓ | | ✓ |
-| `immich.assets.get` | Get full metadata for a single asset | ✓ | | ✓ |
-| `immich.assets.view` | Get thumbnail, original, and web UI URLs for an asset | ✓ | | ✓ |
-| `immich.assets.upload` | Upload an asset from a local file path or URL | | | |
-| `immich.assets.update` | Update favorite, archived, description, rating | | | ✓ |
-| `immich.assets.bulk_update` | Bulk update multiple assets (dry_run supported) | | | ✓ |
-| `immich.assets.delete` | Delete assets, optionally permanently (dry_run supported) | | ✓ | ✓ |
-| `immich.assets.statistics` | Get counts by asset type | ✓ | | ✓ |
+| `immich_assets_list` | List assets with filters (favorite, archived, trashed, type) | ✓ | | ✓ |
+| `immich_assets_get` | Get full metadata for a single asset | ✓ | | ✓ |
+| `immich_assets_view` | Get thumbnail, original, and web UI URLs for an asset | ✓ | | ✓ |
+| `immich_assets_upload` | Upload an asset from a local file path or URL | | | |
+| `immich_assets_update` | Update favorite, archived, description, rating | | | ✓ |
+| `immich_assets_bulk_update` | Bulk update multiple assets (dry_run supported) | | | ✓ |
+| `immich_assets_delete` | Delete assets, optionally permanently (dry_run supported) | | ✓ | ✓ |
+| `immich_assets_statistics` | Get counts by asset type | ✓ | | ✓ |
 
 ### Search
 
 | Tool | Description | R | D | I |
 |------|-------------|:-:|:-:|:-:|
-| `immich.search.metadata` | Filter by date, type, location, camera, person, filename | ✓ | | |
-| `immich.search.smart` | Semantic/CLIP search with natural language queries | ✓ | | |
-| `immich.search.explore` | Discover popular places, people, and things | ✓ | | ✓ |
+| `immich_search_metadata` | Filter by date, type, location, camera, person, filename | ✓ | | |
+| `immich_search_smart` | Semantic/CLIP search with natural language queries | ✓ | | |
+| `immich_search_explore` | Discover popular places, people, and things | ✓ | | ✓ |
 
 ### Albums
 
 | Tool | Description | R | D | I |
 |------|-------------|:-:|:-:|:-:|
-| `immich.albums.list` | List all albums | ✓ | | ✓ |
-| `immich.albums.get` | Get album details and assets | ✓ | | ✓ |
-| `immich.albums.create` | Create a new album | | | |
-| `immich.albums.update` | Update album name, description, or cover | | | ✓ |
-| `immich.albums.delete` | Delete an album (assets are not deleted) | | ✓ | ✓ |
-| `immich.albums.add_assets` | Add assets to an album | | | ✓ |
-| `immich.albums.remove_assets` | Remove assets from an album | | | ✓ |
+| `immich_albums_list` | List all albums | ✓ | | ✓ |
+| `immich_albums_get` | Get album details and assets | ✓ | | ✓ |
+| `immich_albums_create` | Create a new album | | | |
+| `immich_albums_update` | Update album name, description, or cover | | | ✓ |
+| `immich_albums_delete` | Delete an album (assets are not deleted) | | ✓ | ✓ |
+| `immich_albums_add_assets` | Add assets to an album | | | ✓ |
+| `immich_albums_remove_assets` | Remove assets from an album | | | ✓ |
 
 ### People
 
 | Tool | Description | R | D | I |
 |------|-------------|:-:|:-:|:-:|
-| `immich.people.list` | List recognized people | ✓ | | ✓ |
-| `immich.people.get` | Get person details | ✓ | | ✓ |
-| `immich.people.update` | Update name or visibility | | | ✓ |
-| `immich.people.merge` | Merge two face clusters | | ✓ | |
-| `immich.people.statistics` | Get asset count for a person | ✓ | | ✓ |
+| `immich_people_list` | List recognized people | ✓ | | ✓ |
+| `immich_people_get` | Get person details | ✓ | | ✓ |
+| `immich_people_update` | Update name or visibility | | | ✓ |
+| `immich_people_merge` | Merge two face clusters | | ✓ | |
+| `immich_people_statistics` | Get asset count for a person | ✓ | | ✓ |
 
 ### Tags
 
 | Tool | Description | R | D | I |
 |------|-------------|:-:|:-:|:-:|
-| `immich.tags.list` | List all tags | ✓ | | ✓ |
-| `immich.tags.get` | Get a tag by ID | ✓ | | ✓ |
-| `immich.tags.create` | Create a tag (use `/` for nested tags) | | | |
-| `immich.tags.update` | Update tag name or color | | | ✓ |
-| `immich.tags.delete` | Delete a tag | | ✓ | ✓ |
+| `immich_tags_list` | List all tags | ✓ | | ✓ |
+| `immich_tags_get` | Get a tag by ID | ✓ | | ✓ |
+| `immich_tags_create` | Create a tag (use `/` for nested tags) | | | |
+| `immich_tags_update` | Update tag name or color | | | ✓ |
+| `immich_tags_delete` | Delete a tag | | ✓ | ✓ |
 
 ### Shared Links
 
 | Tool | Description | R | D | I |
 |------|-------------|:-:|:-:|:-:|
-| `immich.shared_links.list` | List all shared links | ✓ | | ✓ |
-| `immich.shared_links.get` | Get shared link details | ✓ | | ✓ |
-| `immich.shared_links.create` | Create a shareable URL | | | |
-| `immich.shared_links.update` | Update expiry, password, permissions | | | ✓ |
-| `immich.shared_links.remove` | Revoke a shared link | | ✓ | ✓ |
+| `immich_shared_links_list` | List all shared links | ✓ | | ✓ |
+| `immich_shared_links_get` | Get shared link details | ✓ | | ✓ |
+| `immich_shared_links_create` | Create a shareable URL | | | |
+| `immich_shared_links_update` | Update expiry, password, permissions | | | ✓ |
+| `immich_shared_links_remove` | Revoke a shared link | | ✓ | ✓ |
 
 ### Activities
 
 | Tool | Description | R | D | I |
 |------|-------------|:-:|:-:|:-:|
-| `immich.activities.list` | List comments and likes | ✓ | | ✓ |
-| `immich.activities.create` | Add a comment or like | | | |
-| `immich.activities.delete` | Delete an activity | | ✓ | ✓ |
-| `immich.activities.statistics` | Get comment count | ✓ | | ✓ |
+| `immich_activities_list` | List comments and likes | ✓ | | ✓ |
+| `immich_activities_create` | Add a comment or like | | | |
+| `immich_activities_delete` | Delete an activity | | ✓ | ✓ |
+| `immich_activities_statistics` | Get comment count | ✓ | | ✓ |
 
 ### Duplicates
 
 | Tool | Description | R | D | I |
 |------|-------------|:-:|:-:|:-:|
-| `immich.duplicates.list` | List duplicate groups with analysis (format score, resolution, protection status). Paginated (`page`/`page_size`, default 50 groups/page). Results are served from an in-memory cache; first call after server start returns `cache_ready=false` while data loads — large libraries may take 20–30 minutes on first load. | ✓ | | ✓ |
-| `immich.duplicates.delete` | Delete assets from duplicate groups (dry_run supported) | | ✓ | ✓ |
-| `immich.duplicates.dismiss` | Dismiss duplicate groups without deleting files (dry_run supported) | | ✓ | ✓ |
+| `immich_duplicates_list` | List duplicate groups with analysis (format score, resolution, protection status). Paginated (`page`/`page_size`, default 50 groups/page). Results are served from an in-memory cache; first call after server start returns `cache_ready=false` while data loads — large libraries may take 20–30 minutes on first load. | ✓ | | ✓ |
+| `immich_duplicates_delete` | Delete assets from duplicate groups (dry_run supported) | | ✓ | ✓ |
+| `immich_duplicates_dismiss` | Dismiss duplicate groups without deleting files (dry_run supported) | | ✓ | ✓ |
 
 #### Pagination
 
-`immich.duplicates.list` returns paginated results to avoid oversized responses on large libraries:
+`immich_duplicates_list` returns paginated results to avoid oversized responses on large libraries:
 
 | Parameter | Default | Description |
 |-----------|---------|-------------|
@@ -233,7 +233,7 @@ The response includes `total_groups`, `total_pages`, `page`, and `page_size` fie
 
 #### Duplicate Analysis Fields
 
-`immich.duplicates.list` with `analyze=true` (default) returns per-group analysis:
+`immich_duplicates_list` with `analyze=true` (default) returns per-group analysis:
 
 | Field | Description |
 |-------|-------------|

@@ -205,7 +205,7 @@ async def test_list_returns_prefetching_when_cache_empty(registered):
     mcp, client = registered
     client.get.return_value = []
 
-    result = await get_fn(mcp, "immich.duplicates.list")()
+    result = await get_fn(mcp, "immich_duplicates_list")()
 
     assert result["cache_ready"] is False
     assert result["status"] == "prefetching"
@@ -219,7 +219,7 @@ async def test_list_populates_cache_in_background(registered):
     client.get.return_value = []
 
     # First call: prefetch starts
-    await get_fn(mcp, "immich.duplicates.list")()
+    await get_fn(mcp, "immich_duplicates_list")()
     # Yield control so the background task runs
     await asyncio.sleep(0)
 
@@ -240,7 +240,7 @@ async def test_list_returns_data_from_cache(registered):
         }
     ]
 
-    result = await get_fn(mcp, "immich.duplicates.list")()
+    result = await get_fn(mcp, "immich_duplicates_list")()
 
     assert result["cache_ready"] is True
     assert result["total_groups"] == 1
@@ -255,7 +255,7 @@ async def test_list_does_not_call_api_on_cache_hit(registered):
     mcp, client = registered
     dup_mod._cache = []
 
-    await get_fn(mcp, "immich.duplicates.list")()
+    await get_fn(mcp, "immich_duplicates_list")()
 
     client.get.assert_not_called()
 
@@ -273,7 +273,7 @@ async def test_list_includes_analysis_by_default(registered):
         }
     ]
 
-    result = await get_fn(mcp, "immich.duplicates.list")(analyze=True)
+    result = await get_fn(mcp, "immich_duplicates_list")(analyze=True)
 
     group = result["groups"][0]
     assert "analysis" in group
@@ -287,14 +287,14 @@ async def test_list_skips_analysis_when_disabled(registered):
         {"duplicateId": "dup-1", "assets": [make_asset("a1"), make_asset("a2")]}
     ]
 
-    result = await get_fn(mcp, "immich.duplicates.list")(analyze=False)
+    result = await get_fn(mcp, "immich_duplicates_list")(analyze=False)
 
     assert "analysis" not in result["groups"][0]
 
 
 def test_list_is_readonly(registered):
     mcp, _ = registered
-    ann = get_annotations(mcp, "immich.duplicates.list")
+    ann = get_annotations(mcp, "immich_duplicates_list")
     assert ann.readOnlyHint is True
     assert ann.idempotentHint is True
 
@@ -307,7 +307,7 @@ async def test_list_pagination(registered):
         for i in range(7)
     ]
 
-    result = await get_fn(mcp, "immich.duplicates.list")(page=2, page_size=3, analyze=False)
+    result = await get_fn(mcp, "immich_duplicates_list")(page=2, page_size=3, analyze=False)
 
     assert result["total_groups"] == 7
     assert result["total_pages"] == 3
@@ -325,7 +325,7 @@ async def test_list_pagination_last_page(registered):
         for i in range(7)
     ]
 
-    result = await get_fn(mcp, "immich.duplicates.list")(page=3, page_size=3, analyze=False)
+    result = await get_fn(mcp, "immich_duplicates_list")(page=3, page_size=3, analyze=False)
 
     assert len(result["groups"]) == 1
     assert result["groups"][0]["duplicate_id"] == "dup-6"
@@ -339,7 +339,7 @@ async def test_list_pagination_last_page(registered):
 async def test_delete_dry_run_default(registered):
     mcp, client = registered
 
-    result = await get_fn(mcp, "immich.duplicates.delete")(["id1", "id2"])
+    result = await get_fn(mcp, "immich_duplicates_delete")(["id1", "id2"])
 
     client.delete.assert_not_called()
     assert result["dry_run"] is True
@@ -351,7 +351,7 @@ async def test_delete_dry_run_default(registered):
 async def test_delete_dry_run_explicit_true(registered):
     mcp, client = registered
 
-    result = await get_fn(mcp, "immich.duplicates.delete")(["id1"], dry_run=True)
+    result = await get_fn(mcp, "immich_duplicates_delete")(["id1"], dry_run=True)
 
     client.delete.assert_not_called()
     assert "message" in result
@@ -361,7 +361,7 @@ async def test_delete_dry_run_explicit_true(registered):
 async def test_delete_executes_with_dry_run_false(registered):
     mcp, client = registered
 
-    result = await get_fn(mcp, "immich.duplicates.delete")(
+    result = await get_fn(mcp, "immich_duplicates_delete")(
         ["id1", "id2"], dry_run=False
     )
 
@@ -375,7 +375,7 @@ async def test_delete_executes_with_dry_run_false(registered):
 async def test_delete_permanent(registered):
     mcp, client = registered
 
-    await get_fn(mcp, "immich.duplicates.delete")(["id1"], force=True, dry_run=False)
+    await get_fn(mcp, "immich_duplicates_delete")(["id1"], force=True, dry_run=False)
 
     _, kwargs = client.delete.call_args
     assert kwargs["json"]["force"] is True
@@ -383,7 +383,7 @@ async def test_delete_permanent(registered):
 
 def test_delete_is_destructive(registered):
     mcp, _ = registered
-    ann = get_annotations(mcp, "immich.duplicates.delete")
+    ann = get_annotations(mcp, "immich_duplicates_delete")
     assert ann.destructiveHint is True
     assert ann.idempotentHint is True
 
@@ -396,7 +396,7 @@ def test_delete_is_destructive(registered):
 async def test_dismiss_dry_run_default(registered):
     mcp, client = registered
 
-    result = await get_fn(mcp, "immich.duplicates.dismiss")(["dup-1", "dup-2"])
+    result = await get_fn(mcp, "immich_duplicates_dismiss")(["dup-1", "dup-2"])
 
     client.delete.assert_not_called()
     assert result["dry_run"] is True
@@ -408,7 +408,7 @@ async def test_dismiss_dry_run_default(registered):
 async def test_dismiss_dry_run_explicit_true(registered):
     mcp, client = registered
 
-    result = await get_fn(mcp, "immich.duplicates.dismiss")(["dup-1"], dry_run=True)
+    result = await get_fn(mcp, "immich_duplicates_dismiss")(["dup-1"], dry_run=True)
 
     client.delete.assert_not_called()
     assert "message" in result
@@ -418,7 +418,7 @@ async def test_dismiss_dry_run_explicit_true(registered):
 async def test_dismiss_executes_with_dry_run_false(registered):
     mcp, client = registered
 
-    result = await get_fn(mcp, "immich.duplicates.dismiss")(
+    result = await get_fn(mcp, "immich_duplicates_dismiss")(
         ["dup-1", "dup-2"], dry_run=False
     )
 
@@ -431,6 +431,6 @@ async def test_dismiss_executes_with_dry_run_false(registered):
 
 def test_dismiss_is_destructive(registered):
     mcp, _ = registered
-    ann = get_annotations(mcp, "immich.duplicates.dismiss")
+    ann = get_annotations(mcp, "immich_duplicates_dismiss")
     assert ann.destructiveHint is True
     assert ann.idempotentHint is True

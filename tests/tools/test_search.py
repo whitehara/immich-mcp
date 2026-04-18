@@ -16,7 +16,7 @@ async def test_metadata_search_minimal(registered):
     mcp, client = registered
     client.post.return_value = {"assets": {"items": []}}
 
-    await get_fn(mcp, "immich.search.metadata")()
+    await get_fn(mcp, "immich_search_metadata")()
 
     client.post.assert_called_once()
     path, kwargs = client.post.call_args
@@ -30,7 +30,7 @@ async def test_metadata_search_with_filters(registered):
     mcp, client = registered
     client.post.return_value = {}
 
-    await get_fn(mcp, "immich.search.metadata")(
+    await get_fn(mcp, "immich_search_metadata")(
         type="IMAGE",
         city="Tokyo",
         country="Japan",
@@ -56,7 +56,7 @@ async def test_metadata_search_with_person(registered):
     mcp, client = registered
     client.post.return_value = {}
 
-    await get_fn(mcp, "immich.search.metadata")(person_id="person-uuid")
+    await get_fn(mcp, "immich_search_metadata")(person_id="person-uuid")
 
     _, kwargs = client.post.call_args
     assert kwargs["json"]["personId"] == "person-uuid"
@@ -64,7 +64,7 @@ async def test_metadata_search_with_person(registered):
 
 def test_metadata_is_readonly(registered):
     mcp, _ = registered
-    ann = get_annotations(mcp, "immich.search.metadata")
+    ann = get_annotations(mcp, "immich_search_metadata")
     assert ann.readOnlyHint is True
 
 
@@ -75,7 +75,7 @@ async def test_smart_search_sends_query(registered):
     mcp, client = registered
     client.post.return_value = {"assets": {"items": []}}
 
-    await get_fn(mcp, "immich.search.smart")("sunset at the beach")
+    await get_fn(mcp, "immich_search_smart")("sunset at the beach")
 
     _, kwargs = client.post.call_args
     assert kwargs["json"]["query"] == "sunset at the beach"
@@ -87,7 +87,7 @@ async def test_smart_search_with_type_filter(registered):
     mcp, client = registered
     client.post.return_value = {}
 
-    await get_fn(mcp, "immich.search.smart")("birthday party", type="VIDEO")
+    await get_fn(mcp, "immich_search_smart")("birthday party", type="VIDEO")
 
     _, kwargs = client.post.call_args
     assert kwargs["json"]["type"] == "VIDEO"
@@ -95,7 +95,7 @@ async def test_smart_search_with_type_filter(registered):
 
 def test_smart_is_readonly(registered):
     mcp, _ = registered
-    ann = get_annotations(mcp, "immich.search.smart")
+    ann = get_annotations(mcp, "immich_search_smart")
     assert ann.readOnlyHint is True
 
 
@@ -106,7 +106,7 @@ async def test_explore_calls_endpoint(registered):
     mcp, client = registered
     client.get.return_value = [{"fieldName": "city", "items": []}]
 
-    result = await get_fn(mcp, "immich.search.explore")()
+    result = await get_fn(mcp, "immich_search_explore")()
 
     client.get.assert_called_once_with("/api/search/explore")
     assert isinstance(result, list)
@@ -114,7 +114,7 @@ async def test_explore_calls_endpoint(registered):
 
 def test_explore_is_readonly_and_idempotent(registered):
     mcp, _ = registered
-    ann = get_annotations(mcp, "immich.search.explore")
+    ann = get_annotations(mcp, "immich_search_explore")
     assert ann.readOnlyHint is True
     assert ann.idempotentHint is True
 
@@ -128,7 +128,7 @@ async def test_metadata_search_adds_web_url(registered):
         "assets": {"items": [{"id": "a1"}, {"id": "a2"}], "total": 2}
     }
 
-    result = await get_fn(mcp, "immich.search.metadata")()
+    result = await get_fn(mcp, "immich_search_metadata")()
 
     items = result["assets"]["items"]
     assert all("web_url" in item for item in items)
@@ -142,6 +142,6 @@ async def test_smart_search_adds_web_url(registered):
         "assets": {"items": [{"id": "b1"}], "total": 1}
     }
 
-    result = await get_fn(mcp, "immich.search.smart")("sunset")
+    result = await get_fn(mcp, "immich_search_smart")("sunset")
 
     assert "web_url" in result["assets"]["items"][0]

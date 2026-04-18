@@ -9,7 +9,7 @@ from ..client import get_client
 
 def register(mcp: FastMCP) -> None:
     @mcp.tool(
-        name="immich.tags.list",
+        name="immich_tags_list",
         description="List all tags in the library.",
         annotations=ToolAnnotations(title="immich List Tags", readOnlyHint=True, idempotentHint=True),
     )
@@ -18,7 +18,7 @@ def register(mcp: FastMCP) -> None:
         return await client.get("/api/tags")
 
     @mcp.tool(
-        name="immich.tags.get",
+        name="immich_tags_get",
         description="Get details of a specific tag by ID.",
         annotations=ToolAnnotations(title="immich Get Tag", readOnlyHint=True, idempotentHint=True),
     )
@@ -29,7 +29,7 @@ def register(mcp: FastMCP) -> None:
         return await client.get(f"/api/tags/{tag_id}")
 
     @mcp.tool(
-        name="immich.tags.create",
+        name="immich_tags_create",
         description="Create a new tag. Use '/' as separator for nested tags (e.g. 'Travel/Japan').",
         annotations=ToolAnnotations(title="immich Create Tag"),
     )
@@ -44,7 +44,7 @@ def register(mcp: FastMCP) -> None:
         return await client.post("/api/tags", json=body)
 
     @mcp.tool(
-        name="immich.tags.update",
+        name="immich_tags_update",
         description="Update a tag's name or color.",
         annotations=ToolAnnotations(title="immich Update Tag", idempotentHint=True),
     )
@@ -62,7 +62,7 @@ def register(mcp: FastMCP) -> None:
         return await client.put(f"/api/tags/{tag_id}", json=body)
 
     @mcp.tool(
-        name="immich.tags.delete",
+        name="immich_tags_delete",
         description="Delete a tag by ID.",
         annotations=ToolAnnotations(title="immich Delete Tag", destructiveHint=True, idempotentHint=True),
     )

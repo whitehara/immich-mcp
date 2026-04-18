@@ -19,7 +19,7 @@ def _add_album_web_url(album: dict) -> dict:
 
 def register(mcp: FastMCP) -> None:
     @mcp.tool(
-        name="immich.albums.list",
+        name="immich_albums_list",
         description="List all albums. Optionally filter by shared status.",
         annotations=ToolAnnotations(title="immich List Albums", readOnlyHint=True, idempotentHint=True),
     )
@@ -32,7 +32,7 @@ def register(mcp: FastMCP) -> None:
         return [_add_album_web_url(a) for a in albums]
 
     @mcp.tool(
-        name="immich.albums.get",
+        name="immich_albums_get",
         description="Get full details of an album including its assets.",
         annotations=ToolAnnotations(title="immich Get Album", readOnlyHint=True, idempotentHint=True),
     )
@@ -47,7 +47,7 @@ def register(mcp: FastMCP) -> None:
         return _add_album_web_url(album)
 
     @mcp.tool(
-        name="immich.albums.create",
+        name="immich_albums_create",
         description="Create a new album with an optional list of asset IDs.",
         annotations=ToolAnnotations(title="immich Create Album"),
     )
@@ -66,7 +66,7 @@ def register(mcp: FastMCP) -> None:
         return _add_album_web_url(album)
 
     @mcp.tool(
-        name="immich.albums.update",
+        name="immich_albums_update",
         description="Update album metadata: name, description, or cover asset.",
         annotations=ToolAnnotations(title="immich Update Album", idempotentHint=True),
     )
@@ -87,7 +87,7 @@ def register(mcp: FastMCP) -> None:
         return await client.patch(f"/api/albums/{album_id}", json=body)
 
     @mcp.tool(
-        name="immich.albums.delete",
+        name="immich_albums_delete",
         description="Delete an album. This does not delete the assets inside it.",
         annotations=ToolAnnotations(title="immich Delete Album", destructiveHint=True, idempotentHint=True),
     )
@@ -99,7 +99,7 @@ def register(mcp: FastMCP) -> None:
         return {"deleted": album_id}
 
     @mcp.tool(
-        name="immich.albums.add_assets",
+        name="immich_albums_add_assets",
         description="Add one or more assets to an album.",
         annotations=ToolAnnotations(title="immich Add Assets to Album", idempotentHint=True),
     )
@@ -111,7 +111,7 @@ def register(mcp: FastMCP) -> None:
         return await client.put(f"/api/albums/{album_id}/assets", json={"ids": asset_ids})
 
     @mcp.tool(
-        name="immich.albums.remove_assets",
+        name="immich_albums_remove_assets",
         description="Remove one or more assets from an album. The assets themselves are not deleted.",
         annotations=ToolAnnotations(title="immich Remove Assets from Album", idempotentHint=True),
     )

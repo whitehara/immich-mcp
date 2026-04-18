@@ -23,7 +23,7 @@ def _add_web_url(asset: dict) -> dict:
 
 def register(mcp: FastMCP) -> None:
     @mcp.tool(
-        name="immich.assets.list",
+        name="immich_assets_list",
         description="List assets with optional filters. Returns paginated results.",
         annotations=ToolAnnotations(title="immich List Assets", readOnlyHint=True, idempotentHint=True),
     )
@@ -49,7 +49,7 @@ def register(mcp: FastMCP) -> None:
         return [_add_web_url(a) for a in assets]
 
     @mcp.tool(
-        name="immich.assets.get",
+        name="immich_assets_get",
         description="Get full metadata for a single asset by its ID.",
         annotations=ToolAnnotations(title="immich Get Asset", readOnlyHint=True, idempotentHint=True),
     )
@@ -61,7 +61,7 @@ def register(mcp: FastMCP) -> None:
         return _add_web_url(asset)
 
     @mcp.tool(
-        name="immich.assets.view",
+        name="immich_assets_view",
         description=(
             "Get direct URLs for viewing or downloading an asset. "
             "Returns thumbnail, original file, and Immich web UI links. "
@@ -80,7 +80,7 @@ def register(mcp: FastMCP) -> None:
         }
 
     @mcp.tool(
-        name="immich.assets.upload",
+        name="immich_assets_upload",
         description=(
             "Upload an asset to Immich from a local file path or a URL. "
             "For file paths, the MCP server process must have read access to the file. "
@@ -131,7 +131,7 @@ def register(mcp: FastMCP) -> None:
         return _add_web_url(result)
 
     @mcp.tool(
-        name="immich.assets.update",
+        name="immich_assets_update",
         description="Update metadata for a single asset (favorite, archived, description, rating).",
         annotations=ToolAnnotations(title="immich Update Asset", idempotentHint=True),
     )
@@ -155,7 +155,7 @@ def register(mcp: FastMCP) -> None:
         return await client.put(f"/api/assets/{asset_id}", json=body)
 
     @mcp.tool(
-        name="immich.assets.bulk_update",
+        name="immich_assets_bulk_update",
         description="Update metadata for multiple assets at once. Supports dry_run to preview changes.",
         annotations=ToolAnnotations(title="immich Bulk Update Assets", idempotentHint=True),
     )
@@ -192,7 +192,7 @@ def register(mcp: FastMCP) -> None:
         return await client.put("/api/assets", json=body)
 
     @mcp.tool(
-        name="immich.assets.delete",
+        name="immich_assets_delete",
         description="Delete one or more assets. Set force=true to permanently delete (skip trash). Always use dry_run=true first to preview.",
         annotations=ToolAnnotations(title="immich Delete Assets", destructiveHint=True, idempotentHint=True),
     )
@@ -213,7 +213,7 @@ def register(mcp: FastMCP) -> None:
         return {"deleted": len(asset_ids), "permanent": force}
 
     @mcp.tool(
-        name="immich.assets.statistics",
+        name="immich_assets_statistics",
         description="Get asset counts broken down by type (images, videos, total).",
         annotations=ToolAnnotations(title="immich Asset Statistics", readOnlyHint=True, idempotentHint=True),
     )

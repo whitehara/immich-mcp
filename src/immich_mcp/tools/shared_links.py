@@ -9,7 +9,7 @@ from ..client import get_client
 
 def register(mcp: FastMCP) -> None:
     @mcp.tool(
-        name="immich.shared_links.list",
+        name="immich_shared_links_list",
         description="List all shared links.",
         annotations=ToolAnnotations(title="immich List Shared Links", readOnlyHint=True, idempotentHint=True),
     )
@@ -18,7 +18,7 @@ def register(mcp: FastMCP) -> None:
         return await client.get("/api/shared-links")
 
     @mcp.tool(
-        name="immich.shared_links.get",
+        name="immich_shared_links_get",
         description="Get details of a specific shared link by ID.",
         annotations=ToolAnnotations(title="immich Get Shared Link", readOnlyHint=True, idempotentHint=True),
     )
@@ -29,7 +29,7 @@ def register(mcp: FastMCP) -> None:
         return await client.get(f"/api/shared-links/{shared_link_id}")
 
     @mcp.tool(
-        name="immich.shared_links.create",
+        name="immich_shared_links_create",
         description="Create a shareable link for an album or specific assets. Optionally set expiry and password.",
         annotations=ToolAnnotations(title="immich Create Shared Link"),
     )
@@ -64,7 +64,7 @@ def register(mcp: FastMCP) -> None:
         return await client.post("/api/shared-links", json=body)
 
     @mcp.tool(
-        name="immich.shared_links.update",
+        name="immich_shared_links_update",
         description="Update shared link settings: expiry, password, download permission.",
         annotations=ToolAnnotations(title="immich Update Shared Link", idempotentHint=True),
     )
@@ -94,7 +94,7 @@ def register(mcp: FastMCP) -> None:
         return await client.patch(f"/api/shared-links/{shared_link_id}", json=body)
 
     @mcp.tool(
-        name="immich.shared_links.remove",
+        name="immich_shared_links_remove",
         description="Remove a shared link, revoking access to its content.",
         annotations=ToolAnnotations(title="immich Remove Shared Link", destructiveHint=True, idempotentHint=True),
     )

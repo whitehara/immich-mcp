@@ -16,7 +16,7 @@ async def test_list_default_params(registered):
     mcp, client = registered
     client.get.return_value = []
 
-    await get_fn(mcp, "immich.assets.list")()
+    await get_fn(mcp, "immich_assets_list")()
 
     client.get.assert_called_once_with("/api/assets", params={"page": 1, "pageSize": 50})
 
@@ -26,7 +26,7 @@ async def test_list_with_filters(registered):
     mcp, client = registered
     client.get.return_value = []
 
-    await get_fn(mcp, "immich.assets.list")(
+    await get_fn(mcp, "immich_assets_list")(
         is_favorite=True, is_archived=False, type="IMAGE", page=2, page_size=10
     )
 
@@ -39,7 +39,7 @@ async def test_list_with_filters(registered):
 
 def test_list_is_readonly(registered):
     mcp, _ = registered
-    ann = get_annotations(mcp, "immich.assets.list")
+    ann = get_annotations(mcp, "immich_assets_list")
     assert ann.readOnlyHint is True
     assert ann.idempotentHint is True
 
@@ -51,7 +51,7 @@ async def test_get_calls_correct_endpoint(registered):
     mcp, client = registered
     client.get.return_value = {"id": "abc123", "type": "IMAGE"}
 
-    result = await get_fn(mcp, "immich.assets.get")("abc123")
+    result = await get_fn(mcp, "immich_assets_get")("abc123")
 
     client.get.assert_called_once_with("/api/assets/abc123")
     assert result["id"] == "abc123"
@@ -59,7 +59,7 @@ async def test_get_calls_correct_endpoint(registered):
 
 def test_get_is_readonly(registered):
     mcp, _ = registered
-    ann = get_annotations(mcp, "immich.assets.get")
+    ann = get_annotations(mcp, "immich_assets_get")
     assert ann.readOnlyHint is True
 
 
@@ -70,7 +70,7 @@ async def test_update_only_sends_provided_fields(registered):
     mcp, client = registered
     client.put.return_value = {"id": "abc", "isFavorite": True}
 
-    await get_fn(mcp, "immich.assets.update")("abc", is_favorite=True)
+    await get_fn(mcp, "immich_assets_update")("abc", is_favorite=True)
 
     _, kwargs = client.put.call_args
     assert kwargs["json"] == {"isFavorite": True}
@@ -82,7 +82,7 @@ async def test_update_all_fields(registered):
     mcp, client = registered
     client.put.return_value = {}
 
-    await get_fn(mcp, "immich.assets.update")(
+    await get_fn(mcp, "immich_assets_update")(
         "abc", is_favorite=False, is_archived=True, description="test", rating=4
     )
 
@@ -97,7 +97,7 @@ async def test_update_all_fields(registered):
 
 def test_update_is_idempotent_not_readonly(registered):
     mcp, _ = registered
-    ann = get_annotations(mcp, "immich.assets.update")
+    ann = get_annotations(mcp, "immich_assets_update")
     assert ann.readOnlyHint is None or ann.readOnlyHint is False
     assert ann.idempotentHint is True
 
@@ -108,7 +108,7 @@ def test_update_is_idempotent_not_readonly(registered):
 async def test_bulk_update_dry_run_returns_preview(registered):
     mcp, client = registered
 
-    result = await get_fn(mcp, "immich.assets.bulk_update")(
+    result = await get_fn(mcp, "immich_assets_bulk_update")(
         ["id1", "id2"], is_favorite=True, dry_run=True
     )
 
@@ -123,7 +123,7 @@ async def test_bulk_update_executes_when_not_dry_run(registered):
     mcp, client = registered
     client.put.return_value = {}
 
-    await get_fn(mcp, "immich.assets.bulk_update")(
+    await get_fn(mcp, "immich_assets_bulk_update")(
         ["id1", "id2"], is_favorite=True, dry_run=False
     )
 
@@ -139,7 +139,7 @@ async def test_bulk_update_executes_when_not_dry_run(registered):
 async def test_delete_dry_run_default_no_api_call(registered):
     mcp, client = registered
 
-    result = await get_fn(mcp, "immich.assets.delete")(["id1", "id2"])
+    result = await get_fn(mcp, "immich_assets_delete")(["id1", "id2"])
 
     client.delete.assert_not_called()
     assert result["dry_run"] is True
@@ -151,7 +151,7 @@ async def test_delete_dry_run_default_no_api_call(registered):
 async def test_delete_executes_with_dry_run_false(registered):
     mcp, client = registered
 
-    result = await get_fn(mcp, "immich.assets.delete")(["id1"], dry_run=False)
+    result = await get_fn(mcp, "immich_assets_delete")(["id1"], dry_run=False)
 
     client.delete.assert_called_once_with(
         "/api/assets", json={"ids": ["id1"], "force": False}
@@ -163,7 +163,7 @@ async def test_delete_executes_with_dry_run_false(registered):
 async def test_delete_force_permanent(registered):
     mcp, client = registered
 
-    await get_fn(mcp, "immich.assets.delete")(["id1"], force=True, dry_run=False)
+    await get_fn(mcp, "immich_assets_delete")(["id1"], force=True, dry_run=False)
 
     _, kwargs = client.delete.call_args
     assert kwargs["json"]["force"] is True
@@ -171,7 +171,7 @@ async def test_delete_force_permanent(registered):
 
 def test_delete_is_destructive(registered):
     mcp, _ = registered
-    ann = get_annotations(mcp, "immich.assets.delete")
+    ann = get_annotations(mcp, "immich_assets_delete")
     assert ann.destructiveHint is True
     assert ann.idempotentHint is True
 
@@ -183,7 +183,7 @@ async def test_statistics_calls_endpoint(registered):
     mcp, client = registered
     client.get.return_value = {"images": 1000, "videos": 50, "total": 1050}
 
-    result = await get_fn(mcp, "immich.assets.statistics")()
+    result = await get_fn(mcp, "immich_assets_statistics")()
 
     client.get.assert_called_once_with("/api/assets/statistics")
     assert result["total"] == 1050
@@ -191,7 +191,7 @@ async def test_statistics_calls_endpoint(registered):
 
 def test_statistics_is_readonly(registered):
     mcp, _ = registered
-    ann = get_annotations(mcp, "immich.assets.statistics")
+    ann = get_annotations(mcp, "immich_assets_statistics")
     assert ann.readOnlyHint is True
 
 
@@ -202,7 +202,7 @@ async def test_get_includes_web_url(registered):
     mcp, client = registered
     client.get.return_value = {"id": "abc123", "type": "IMAGE"}
 
-    result = await get_fn(mcp, "immich.assets.get")("abc123")
+    result = await get_fn(mcp, "immich_assets_get")("abc123")
 
     assert "web_url" in result
     assert "abc123" in result["web_url"]
@@ -213,7 +213,7 @@ async def test_list_includes_web_url_per_asset(registered):
     mcp, client = registered
     client.get.return_value = [{"id": "a1"}, {"id": "a2"}]
 
-    result = await get_fn(mcp, "immich.assets.list")()
+    result = await get_fn(mcp, "immich_assets_list")()
 
     assert all("web_url" in a for a in result)
     assert "a1" in result[0]["web_url"]
@@ -225,7 +225,7 @@ async def test_list_includes_web_url_per_asset(registered):
 async def test_view_returns_urls(registered):
     mcp, _ = registered
 
-    result = await get_fn(mcp, "immich.assets.view")("asset-xyz")
+    result = await get_fn(mcp, "immich_assets_view")("asset-xyz")
 
     assert result["asset_id"] == "asset-xyz"
     assert "asset-xyz" in result["thumbnail_url"]
@@ -237,7 +237,7 @@ async def test_view_returns_urls(registered):
 
 def test_view_is_readonly(registered):
     mcp, _ = registered
-    ann = get_annotations(mcp, "immich.assets.view")
+    ann = get_annotations(mcp, "immich_assets_view")
     assert ann.readOnlyHint is True
     assert ann.idempotentHint is True
 
@@ -252,7 +252,7 @@ async def test_upload_from_file_path(registered, tmp_path):
     test_file = tmp_path / "photo.jpg"
     test_file.write_bytes(b"\xff\xd8\xff\xe0fake jpeg")
 
-    result = await get_fn(mcp, "immich.assets.upload")(str(test_file))
+    result = await get_fn(mcp, "immich_assets_upload")(str(test_file))
 
     client.post.assert_called_once()
     _, kwargs = client.post.call_args
@@ -280,7 +280,7 @@ async def test_upload_from_url(registered):
     mock_http.__aexit__ = AsyncMock(return_value=None)
 
     with patch("httpx.AsyncClient", return_value=mock_http):
-        result = await get_fn(mcp, "immich.assets.upload")(
+        result = await get_fn(mcp, "immich_assets_upload")(
             "https://example.com/photo.jpg"
         )
 
@@ -299,7 +299,7 @@ async def test_upload_custom_device_asset_id(registered, tmp_path):
     f = tmp_path / "img.png"
     f.write_bytes(b"data")
 
-    await get_fn(mcp, "immich.assets.upload")(
+    await get_fn(mcp, "immich_assets_upload")(
         str(f), device_asset_id="my-device-id-123"
     )
 

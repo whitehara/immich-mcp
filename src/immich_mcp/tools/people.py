@@ -9,7 +9,7 @@ from ..client import get_client
 
 def register(mcp: FastMCP) -> None:
     @mcp.tool(
-        name="immich.people.list",
+        name="immich_people_list",
         description="List all recognized people from face recognition. Supports pagination.",
         annotations=ToolAnnotations(title="immich List People", readOnlyHint=True, idempotentHint=True),
     )
@@ -25,7 +25,7 @@ def register(mcp: FastMCP) -> None:
         )
 
     @mcp.tool(
-        name="immich.people.get",
+        name="immich_people_get",
         description="Get details for a specific person by ID.",
         annotations=ToolAnnotations(title="immich Get Person", readOnlyHint=True, idempotentHint=True),
     )
@@ -36,7 +36,7 @@ def register(mcp: FastMCP) -> None:
         return await client.get(f"/api/people/{person_id}")
 
     @mcp.tool(
-        name="immich.people.update",
+        name="immich_people_update",
         description="Update a person's name or visibility (hidden/visible).",
         annotations=ToolAnnotations(title="immich Update Person", idempotentHint=True),
     )
@@ -54,7 +54,7 @@ def register(mcp: FastMCP) -> None:
         return await client.put(f"/api/people/{person_id}", json=body)
 
     @mcp.tool(
-        name="immich.people.merge",
+        name="immich_people_merge",
         description="Merge two person clusters into one. The source person will be merged into the target.",
         annotations=ToolAnnotations(title="immich Merge People", destructiveHint=True),
     )
@@ -69,7 +69,7 @@ def register(mcp: FastMCP) -> None:
         )
 
     @mcp.tool(
-        name="immich.people.statistics",
+        name="immich_people_statistics",
         description="Get asset count statistics for a specific person.",
         annotations=ToolAnnotations(title="immich Person Statistics", readOnlyHint=True, idempotentHint=True),
     )

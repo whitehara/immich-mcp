@@ -9,7 +9,7 @@ from ..client import get_client
 
 def register(mcp: FastMCP) -> None:
     @mcp.tool(
-        name="immich.activities.list",
+        name="immich_activities_list",
         description="List comments and likes for an album, optionally filtered by asset.",
         annotations=ToolAnnotations(title="immich List Activities", readOnlyHint=True, idempotentHint=True),
     )
@@ -27,7 +27,7 @@ def register(mcp: FastMCP) -> None:
         return await client.get("/api/activities", params=params)
 
     @mcp.tool(
-        name="immich.activities.create",
+        name="immich_activities_create",
         description="Add a comment or like to an album or specific asset within an album.",
         annotations=ToolAnnotations(title="immich Create Activity"),
     )
@@ -46,7 +46,7 @@ def register(mcp: FastMCP) -> None:
         return await client.post("/api/activities", json=body)
 
     @mcp.tool(
-        name="immich.activities.delete",
+        name="immich_activities_delete",
         description="Delete a comment or like by activity ID.",
         annotations=ToolAnnotations(title="immich Delete Activity", destructiveHint=True, idempotentHint=True),
     )
@@ -58,7 +58,7 @@ def register(mcp: FastMCP) -> None:
         return {"deleted": activity_id}
 
     @mcp.tool(
-        name="immich.activities.statistics",
+        name="immich_activities_statistics",
         description="Get comment count for an album or specific asset within an album.",
         annotations=ToolAnnotations(title="immich Activity Statistics", readOnlyHint=True, idempotentHint=True),
     )

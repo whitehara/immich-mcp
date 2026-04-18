@@ -6,7 +6,7 @@ from ..client import get_client
 
 def register(mcp: FastMCP) -> None:
     @mcp.tool(
-        name="immich.user.me",
+        name="immich_user_me",
         description="Get the profile of the currently authenticated user (name, email, quota, role).",
         annotations=ToolAnnotations(title="immich My Profile", readOnlyHint=True, idempotentHint=True),
     )

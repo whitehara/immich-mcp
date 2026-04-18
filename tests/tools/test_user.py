@@ -14,7 +14,7 @@ async def test_me_calls_correct_endpoint(registered):
     mcp, client = registered
     client.get.return_value = {"id": "user-1", "email": "test@example.com", "name": "Test"}
 
-    result = await get_fn(mcp, "immich.user.me")()
+    result = await get_fn(mcp, "immich_user_me")()
 
     client.get.assert_called_once_with("/api/users/me")
     assert result["email"] == "test@example.com"
@@ -22,6 +22,6 @@ async def test_me_calls_correct_endpoint(registered):
 
 def test_me_is_readonly(registered):
     mcp, _ = registered
-    ann = get_annotations(mcp, "immich.user.me")
+    ann = get_annotations(mcp, "immich_user_me")
     assert ann.readOnlyHint is True
     assert ann.idempotentHint is True

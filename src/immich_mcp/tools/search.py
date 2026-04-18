@@ -20,7 +20,7 @@ def _add_web_url_to_items(result: dict) -> dict:
 
 def register(mcp: FastMCP) -> None:
     @mcp.tool(
-        name="immich.search.metadata",
+        name="immich_search_metadata",
         description="Search assets using metadata filters: date range, type, location, camera model, person, filename.",
         annotations=ToolAnnotations(title="immich Metadata Search", readOnlyHint=True),
     )
@@ -67,7 +67,7 @@ def register(mcp: FastMCP) -> None:
         return _add_web_url_to_items(result)
 
     @mcp.tool(
-        name="immich.search.smart",
+        name="immich_search_smart",
         description="Semantic search using CLIP/ML. Describe what you're looking for in natural language (e.g. 'sunset at the beach', 'birthday party').",
         annotations=ToolAnnotations(title="immich Smart Search", readOnlyHint=True),
     )
@@ -88,7 +88,7 @@ def register(mcp: FastMCP) -> None:
         return _add_web_url_to_items(result)
 
     @mcp.tool(
-        name="immich.search.explore",
+        name="immich_search_explore",
         description="Get discovery data: popular places, recognized people, and notable things in your library.",
         annotations=ToolAnnotations(title="immich Explore Library", readOnlyHint=True, idempotentHint=True),
     )
