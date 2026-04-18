@@ -11,7 +11,7 @@ def register(mcp: FastMCP) -> None:
     @mcp.tool(
         name="immich.tags.list",
         description="List all tags in the library.",
-        annotations=ToolAnnotations(title="List Tags", readOnlyHint=True, idempotentHint=True),
+        annotations=ToolAnnotations(title="immich: List Tags", readOnlyHint=True, idempotentHint=True),
     )
     async def tags_list() -> list:
         client = get_client()
@@ -20,7 +20,7 @@ def register(mcp: FastMCP) -> None:
     @mcp.tool(
         name="immich.tags.get",
         description="Get details of a specific tag by ID.",
-        annotations=ToolAnnotations(title="Get Tag", readOnlyHint=True, idempotentHint=True),
+        annotations=ToolAnnotations(title="immich: Get Tag", readOnlyHint=True, idempotentHint=True),
     )
     async def tags_get(
         tag_id: Annotated[str, Field(description="Tag UUID")],
@@ -31,7 +31,7 @@ def register(mcp: FastMCP) -> None:
     @mcp.tool(
         name="immich.tags.create",
         description="Create a new tag. Use '/' as separator for nested tags (e.g. 'Travel/Japan').",
-        annotations=ToolAnnotations(title="Create Tag"),
+        annotations=ToolAnnotations(title="immich: Create Tag"),
     )
     async def tags_create(
         name: Annotated[str, Field(min_length=1, description="Tag name; use '/' for nested tags e.g. 'Travel/Japan'")],
@@ -46,7 +46,7 @@ def register(mcp: FastMCP) -> None:
     @mcp.tool(
         name="immich.tags.update",
         description="Update a tag's name or color.",
-        annotations=ToolAnnotations(title="Update Tag", idempotentHint=True),
+        annotations=ToolAnnotations(title="immich: Update Tag", idempotentHint=True),
     )
     async def tags_update(
         tag_id: Annotated[str, Field(description="Tag UUID")],
@@ -64,7 +64,7 @@ def register(mcp: FastMCP) -> None:
     @mcp.tool(
         name="immich.tags.delete",
         description="Delete a tag by ID.",
-        annotations=ToolAnnotations(title="Delete Tag", destructiveHint=True, idempotentHint=True),
+        annotations=ToolAnnotations(title="immich: Delete Tag", destructiveHint=True, idempotentHint=True),
     )
     async def tags_delete(
         tag_id: Annotated[str, Field(description="Tag UUID")],

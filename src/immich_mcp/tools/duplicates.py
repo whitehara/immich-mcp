@@ -117,7 +117,7 @@ def register(mcp: FastMCP) -> None:
             "call again in a few minutes. "
             "Use page/page_size to paginate through all groups; check total_pages in the response."
         ),
-        annotations=ToolAnnotations(title="List Duplicates", readOnlyHint=True, idempotentHint=True),
+        annotations=ToolAnnotations(title="immich: List Duplicates", readOnlyHint=True, idempotentHint=True),
     )
     async def duplicates_list(
         analyze: Annotated[bool, Field(description="Include keep/delete recommendations for each group")] = True,
@@ -185,7 +185,7 @@ def register(mcp: FastMCP) -> None:
             "Set force=true to permanently delete (bypass trash). "
             "Do NOT delete assets that are favorited or belong to albums without explicit user approval."
         ),
-        annotations=ToolAnnotations(title="Delete Duplicate Assets", destructiveHint=True, idempotentHint=True),
+        annotations=ToolAnnotations(title="immich: Delete Duplicate Assets", destructiveHint=True, idempotentHint=True),
     )
     async def duplicates_delete(
         asset_ids: Annotated[list[str], Field(description="Asset UUIDs to delete")],
@@ -218,7 +218,7 @@ def register(mcp: FastMCP) -> None:
             "The asset files are NOT deleted — only the duplicate grouping is removed. "
             "Always run with dry_run=true first."
         ),
-        annotations=ToolAnnotations(title="Dismiss Duplicates", destructiveHint=True, idempotentHint=True),
+        annotations=ToolAnnotations(title="immich: Dismiss Duplicates", destructiveHint=True, idempotentHint=True),
     )
     async def duplicates_dismiss(
         duplicate_ids: Annotated[list[str], Field(description="Duplicate group IDs to dismiss")],
