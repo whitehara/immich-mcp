@@ -8,7 +8,7 @@ def register(mcp: FastMCP) -> None:
     @mcp.tool(
         name="immich.user.me",
         description="Get the profile of the currently authenticated user (name, email, quota, role).",
-        annotations=ToolAnnotations(title="immich: My Profile", readOnlyHint=True, idempotentHint=True),
+        annotations=ToolAnnotations(title="immich My Profile", readOnlyHint=True, idempotentHint=True),
     )
     async def user_me() -> dict:
         client = get_client()

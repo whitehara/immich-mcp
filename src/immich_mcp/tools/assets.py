@@ -25,7 +25,7 @@ def register(mcp: FastMCP) -> None:
     @mcp.tool(
         name="immich.assets.list",
         description="List assets with optional filters. Returns paginated results.",
-        annotations=ToolAnnotations(title="immich: List Assets", readOnlyHint=True, idempotentHint=True),
+        annotations=ToolAnnotations(title="immich List Assets", readOnlyHint=True, idempotentHint=True),
     )
     async def assets_list(
         page: Annotated[int, Field(ge=1, description="Page number")] = 1,
@@ -51,7 +51,7 @@ def register(mcp: FastMCP) -> None:
     @mcp.tool(
         name="immich.assets.get",
         description="Get full metadata for a single asset by its ID.",
-        annotations=ToolAnnotations(title="immich: Get Asset", readOnlyHint=True, idempotentHint=True),
+        annotations=ToolAnnotations(title="immich Get Asset", readOnlyHint=True, idempotentHint=True),
     )
     async def assets_get(
         asset_id: Annotated[str, Field(description="Asset UUID")],
@@ -67,7 +67,7 @@ def register(mcp: FastMCP) -> None:
             "Returns thumbnail, original file, and Immich web UI links. "
             "URLs include the API key as a query parameter for direct browser access."
         ),
-        annotations=ToolAnnotations(title="immich: View Asset URLs", readOnlyHint=True, idempotentHint=True),
+        annotations=ToolAnnotations(title="immich View Asset URLs", readOnlyHint=True, idempotentHint=True),
     )
     async def assets_view(
         asset_id: Annotated[str, Field(description="Asset UUID")],
@@ -86,7 +86,7 @@ def register(mcp: FastMCP) -> None:
             "For file paths, the MCP server process must have read access to the file. "
             "For URLs (http/https), the server downloads the file then uploads it to Immich."
         ),
-        annotations=ToolAnnotations(title="immich: Upload Asset"),
+        annotations=ToolAnnotations(title="immich Upload Asset"),
     )
     async def assets_upload(
         source: Annotated[str, Field(description="Local file path or http/https URL to upload")],
@@ -133,7 +133,7 @@ def register(mcp: FastMCP) -> None:
     @mcp.tool(
         name="immich.assets.update",
         description="Update metadata for a single asset (favorite, archived, description, rating).",
-        annotations=ToolAnnotations(title="immich: Update Asset", idempotentHint=True),
+        annotations=ToolAnnotations(title="immich Update Asset", idempotentHint=True),
     )
     async def assets_update(
         asset_id: Annotated[str, Field(description="Asset UUID")],
@@ -157,7 +157,7 @@ def register(mcp: FastMCP) -> None:
     @mcp.tool(
         name="immich.assets.bulk_update",
         description="Update metadata for multiple assets at once. Supports dry_run to preview changes.",
-        annotations=ToolAnnotations(title="immich: Bulk Update Assets", idempotentHint=True),
+        annotations=ToolAnnotations(title="immich Bulk Update Assets", idempotentHint=True),
     )
     async def assets_bulk_update(
         asset_ids: Annotated[list[str], Field(description="List of asset UUIDs to update")],
@@ -194,7 +194,7 @@ def register(mcp: FastMCP) -> None:
     @mcp.tool(
         name="immich.assets.delete",
         description="Delete one or more assets. Set force=true to permanently delete (skip trash). Always use dry_run=true first to preview.",
-        annotations=ToolAnnotations(title="immich: Delete Assets", destructiveHint=True, idempotentHint=True),
+        annotations=ToolAnnotations(title="immich Delete Assets", destructiveHint=True, idempotentHint=True),
     )
     async def assets_delete(
         asset_ids: Annotated[list[str], Field(description="List of asset UUIDs to delete")],
@@ -215,7 +215,7 @@ def register(mcp: FastMCP) -> None:
     @mcp.tool(
         name="immich.assets.statistics",
         description="Get asset counts broken down by type (images, videos, total).",
-        annotations=ToolAnnotations(title="immich: Asset Statistics", readOnlyHint=True, idempotentHint=True),
+        annotations=ToolAnnotations(title="immich Asset Statistics", readOnlyHint=True, idempotentHint=True),
     )
     async def assets_statistics() -> dict:
         client = get_client()

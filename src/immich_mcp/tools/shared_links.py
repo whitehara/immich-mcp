@@ -11,7 +11,7 @@ def register(mcp: FastMCP) -> None:
     @mcp.tool(
         name="immich.shared_links.list",
         description="List all shared links.",
-        annotations=ToolAnnotations(title="immich: List Shared Links", readOnlyHint=True, idempotentHint=True),
+        annotations=ToolAnnotations(title="immich List Shared Links", readOnlyHint=True, idempotentHint=True),
     )
     async def shared_links_list() -> list:
         client = get_client()
@@ -20,7 +20,7 @@ def register(mcp: FastMCP) -> None:
     @mcp.tool(
         name="immich.shared_links.get",
         description="Get details of a specific shared link by ID.",
-        annotations=ToolAnnotations(title="immich: Get Shared Link", readOnlyHint=True, idempotentHint=True),
+        annotations=ToolAnnotations(title="immich Get Shared Link", readOnlyHint=True, idempotentHint=True),
     )
     async def shared_links_get(
         shared_link_id: Annotated[str, Field(description="Shared link UUID")],
@@ -31,7 +31,7 @@ def register(mcp: FastMCP) -> None:
     @mcp.tool(
         name="immich.shared_links.create",
         description="Create a shareable link for an album or specific assets. Optionally set expiry and password.",
-        annotations=ToolAnnotations(title="immich: Create Shared Link"),
+        annotations=ToolAnnotations(title="immich Create Shared Link"),
     )
     async def shared_links_create(
         type: Annotated[Literal["ALBUM", "INDIVIDUAL"], Field(description="Share an album or individual assets")],
@@ -66,7 +66,7 @@ def register(mcp: FastMCP) -> None:
     @mcp.tool(
         name="immich.shared_links.update",
         description="Update shared link settings: expiry, password, download permission.",
-        annotations=ToolAnnotations(title="immich: Update Shared Link", idempotentHint=True),
+        annotations=ToolAnnotations(title="immich Update Shared Link", idempotentHint=True),
     )
     async def shared_links_update(
         shared_link_id: Annotated[str, Field(description="Shared link UUID")],
@@ -96,7 +96,7 @@ def register(mcp: FastMCP) -> None:
     @mcp.tool(
         name="immich.shared_links.remove",
         description="Remove a shared link, revoking access to its content.",
-        annotations=ToolAnnotations(title="immich: Remove Shared Link", destructiveHint=True, idempotentHint=True),
+        annotations=ToolAnnotations(title="immich Remove Shared Link", destructiveHint=True, idempotentHint=True),
     )
     async def shared_links_remove(
         shared_link_id: Annotated[str, Field(description="Shared link UUID")],
