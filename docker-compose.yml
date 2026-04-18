@@ -1,0 +1,12 @@
+services:
+  immich-mcp:
+    build: .
+    image: immich-mcp:latest
+    ports:
+      - "8000:8000"
+    environment:
+      IMMICH_BASE_URL: ${IMMICH_BASE_URL}
+      IMMICH_API_KEY: ${IMMICH_API_KEY}
+      IMMICH_TIMEOUT: ${IMMICH_TIMEOUT:-30.0}
+      IMMICH_MAX_RETRIES: ${IMMICH_MAX_RETRIES:-3}
+    restart: unless-stopped
